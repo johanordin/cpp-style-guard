@@ -14,6 +14,15 @@ function check_dir {
     | grep -c "<replacement " > /dev/null
 }
 
+function check_staged {
+    #echo "check_staged ${1}"
+    dir=${1}
+    git diff --cached --name-only --diff-filter=ACMRT \
+    | grep -e "format-project/${dir}/.*\.h" -e "format-project/${dir}/.*\.cpp" \
+    | xargs -n1 ${CLANGFORMAT} -output-replacements-xml \
+    | grep -c "<replacement " > /dev/null
+}
+
 # ---------------------------
 
 PLATFORM=$(uname)
@@ -31,25 +40,25 @@ fi
 echo "tests 0"
 
 grepCode=1
-if [ "$1" == "--all" ];then
-    # modules we want to check
-    declare -a dirs=("core" "io")
-    for i in "${dirs[@]}";do
+# modules we want to check
+declare -a dirs=("core" "io")
+
+for i in "${dirs[@]}";do
+    #
+    if [ "$1" == "--all" ];then
         check_dir "${i}"
-        if [[ $? -eq 0 ]]; then
-            echo "${i} - format check failed"
-            grepCode=0
-        else
-            echo "${i} - OK"
-        fi
-    done
-elif [ "$1" == "--staged" ];then
-    git diff --cached --name-only --diff-filter=ACMRT \
-    | grep -e '.*\.h' -e '.*\.cpp' \
-    | xargs -n1 ${CLANGFORMAT} -output-replacements-xml \
-    | grep -c "<replacement " > /dev/null
-    grepCode=$?
-fi
+    elif [ "$1" == "--staged" ];then
+        check_staged "${i}"
+    fi
+
+    #
+    if [[ $? -eq 0 ]]; then
+        echo "${i} - format check failed"
+        grepCode=0
+    else
+        echo "${i} - OK"
+    fi
+done
 
 echo "grepCode ${grepCode}"
 # grep exits 0 => found needed formatting changes

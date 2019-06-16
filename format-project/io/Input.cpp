@@ -1,3 +1,5 @@
+#include "Input.h"
+
 namespace NS {
 
 Foo::~Foo() {}

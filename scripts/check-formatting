@@ -15,18 +15,16 @@ if [[ "$1" != "--all" ]] && [[ "$1" != "--staged" ]];then
 fi
 
 if [ "$1" == "--all" ];then
-    find src \( -name *.cpp -or -name *.h \) -print0 \
+    find format-project \( -name *.cpp -or -name *.h \) -print0 \
     | xargs -n1 -0 ${CLANGFORMAT} -output-replacements-xml \
     | grep -c "<replacement " > /dev/null
     grepCode=$?
 elif [ "$1" == "--staged" ];then
-    git diff --cached --name-only --diff-filter=ACMRT | grep -e '.*\.h' -e '.*\.cpp' \
+    git diff --cached --name-only --diff-filter=ACMRT \
+    | grep -e '.*\.h' -e '.*\.cpp' \
     | xargs -n1 ${CLANGFORMAT} -output-replacements-xml \
     | grep -c "<replacement " >/dev/null
     grepCode=$?
-else
-    echo "Please specify --all or --staged"
-    exit 1
 fi
 
 # grep exits 0 => found needed formatting changes

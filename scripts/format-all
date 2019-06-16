@@ -5,6 +5,6 @@
 PLATFORM=$(uname)
 CLANGFORMAT="./scripts/${PLATFORM}/clang-format -style=file"
 
-find src \( -name *.cpp -or -name *.h \) -print0 | xargs -n1 -0 ${CLANGFORMAT} -i
+find format-project/io \( -name *.cpp -or -name *.h \) -print0 | xargs -n1 -0 ${CLANGFORMAT} -i
 
 echo "format-all done"

@@ -2,22 +2,14 @@
 
 namespace NS {
 
-Foo::~Foo() {}
+Foo::Foo() {}
 
-Foo::Size() const { return 4; }
+int Foo::Size() const { return 4; }
 
 void Foo::SetBar(int i) { bar = i; }
 
-void Foo::Frobnicate()
-{
-    doSomething();
-    doSomethingElse();
-}
+void Foo::Frobnicate() {}
 
-void Foo::ReverseFrobnicate()
-{
-    doSomethingElse();
-    doSomething();
-}
+void Foo::ReverseFrobnicate() {}
 
 }  // ::NS

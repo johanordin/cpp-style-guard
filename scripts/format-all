@@ -1,10 +1,25 @@
 #!/bin/bash
 
-# This command can be run by the user to clang-format everything.
+#set -eu
 
+function format_dir {
+    echo "${1} - formatting"
+    find "format-project/${1}" \( -name *.cpp -or -name *.h \) -print0 \
+         | xargs -n1 -0 ${CLANGFORMAT} -i
+}
+
+#----------------------------
+
+# This command can be run by the user to clang-format everything.
 PLATFORM=$(uname)
 CLANGFORMAT="./scripts/${PLATFORM}/clang-format -style=file"
 
-find format-project/io \( -name *.cpp -or -name *.h \) -print0 | xargs -n1 -0 ${CLANGFORMAT} -i
+# find format-project/io \( -name *.cpp -or -name *.h \) -print0 | xargs -n1 -0 ${CLANGFORMAT} -i
+# find format-project/core \( -name *.cpp -or -name *.h \) -print0 | xargs -n1 -0 ${CLANGFORMAT} -i
 
-echo "format-all done"
+declare -a dirs=("core" "io")
+for i in "${dirs[@]}";do
+    format_dir "${i}"
+done
+
+echo "format done"

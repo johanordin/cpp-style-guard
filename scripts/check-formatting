@@ -1,32 +1,57 @@
 #!/bin/bash
 
+#set -eu
+
+function usage {
+    echo "usage: `basename $0` --all or --staged"
+    exit 1
+}
+
+function check_dir {
+    echo "check_dir"
+    find "format-project/${1}" \( -name *.cpp -or -name *.h \) -print0 \
+    | xargs -n1 -0 ${CLANGFORMAT} -output-replacements-xml \
+    | grep -c "<replacement " > /dev/null
+}
+
+# ---------------------------
+
 PLATFORM=$(uname)
 CLANGFORMAT="./scripts/${PLATFORM}/clang-format -style=file"
 
 #Check command line args
 if [[ "$#" -lt "1" ]]; then
-    echo "usage: `basename $0` --all or --staged"
-    exit 1
+    usage
 fi
 
 if [[ "$1" != "--all" ]] && [[ "$1" != "--staged" ]];then
     echo "Please specify --all or --staged"
     exit 1
 fi
+echo "tests 0"
 
+grepCode=1
 if [ "$1" == "--all" ];then
-    find format-project \( -name *.cpp -or -name *.h \) -print0 \
-    | xargs -n1 -0 ${CLANGFORMAT} -output-replacements-xml \
-    | grep -c "<replacement " > /dev/null
-    grepCode=$?
+    # modules we want to check
+    declare -a dirs=("core" "io")
+    for i in "${dirs[@]}";do
+        check_dir "${i}"
+        if [[ $? -eq 0 ]]; then
+            echo "${i} - format check failed"
+            grepCode=0
+        else
+            echo "${i} - OK"
+        fi
+    done
 elif [ "$1" == "--staged" ];then
     git diff --cached --name-only --diff-filter=ACMRT \
     | grep -e '.*\.h' -e '.*\.cpp' \
     | xargs -n1 ${CLANGFORMAT} -output-replacements-xml \
-    | grep -c "<replacement " >/dev/null
+    | grep -c "<replacement " > /dev/null
     grepCode=$?
 fi
 
+echo "grepCode ${grepCode}"
 # grep exits 0 => found needed formatting changes
 if [ $grepCode -ne 0 ];then
     echo "Formatting looks good!"

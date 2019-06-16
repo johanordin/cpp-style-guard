@@ -9,7 +9,6 @@ function format_dir {
 }
 
 #----------------------------
-
 # This command can be run by the user to clang-format everything.
 PLATFORM=$(uname)
 CLANGFORMAT="./scripts/${PLATFORM}/clang-format -style=file"

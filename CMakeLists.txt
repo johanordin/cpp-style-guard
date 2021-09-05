@@ -2,6 +2,11 @@
 # refer to the root source directory of the project as ${HELLO_SOURCE_DIR} and
 # to the root binary directory of the project as ${HELLO_BINARY_DIR}.
 cmake_minimum_required(VERSION 2.8.11)
-project(cpp-style-guard)
+
+##
+## PROJECT
+## name and version
+##
+project(cpp-style-guard VERSION 1.0.0 LANGUAGES CXX)
 
 add_subdirectory(format-project)

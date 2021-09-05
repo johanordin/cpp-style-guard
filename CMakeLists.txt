@@ -7,6 +7,6 @@ cmake_minimum_required(VERSION 2.8.11)
 ## PROJECT
 ## name and version
 ##
-project(cpp-style-guard VERSION 1.0.0 LANGUAGES CXX)
+project(cpp-style-guard VERSION 1.1.0 LANGUAGES CXX)
 
 add_subdirectory(format-project)
